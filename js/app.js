@@ -135,29 +135,23 @@ function loadPage(page) {
             updateTasks();
             break;
         case 'leaderboard':
-            const lbDiv = document.getElementById('leaderboard');
-            lbDiv.innerHTML = `
-                <h2>Leaderboard</h2>
-                <p>Your Rank: #${getUserRank()}</p>
-                <div id="leaderboard-list">
-                    ${leaderboard.slice(0, 100).map((player, index) => `
-                        <div class="leaderboard-item">
-                            <span>${index + 1 === 1 ? '🏆' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : '#' + (index + 1)} ${player.username}</span>
-                            <span>${player.totalCwry} CWRY</span>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
+            loadLeaderboard();
             break;
         case 'frens':
             const frensDiv = document.getElementById('frens');
             const referralLink = `https://t.me/cowrierushbot?start=${userData.id}`;
+            const referralCode = `CWRY${userData.id}`;
             frensDiv.innerHTML = `
                 <h2>Frens</h2>
                 <div id="referral-link">
                     <p>Your Referral Link:</p>
                     <input type="text" id="referral-input" value="${referralLink}" readonly>
                     <button onclick="copyReferralLink()">Copy Link</button>
+                </div>
+                <div id="referral-code">
+                    <p>Your Referral Code:</p>
+                    <input type="text" id="referral-code-input" value="${referralCode}" readonly>
+                    <button onclick="copyReferralCode()">Copy Code</button>
                 </div>
                 <div id="frens-info">
                     <p>You get ${userData.isPremium ? '5%' : '3%'} of all referrals' total balance.</p>
@@ -186,11 +180,26 @@ function updateStatusBar() {
     const progress = Math.min(userData.totalCwry / 1000, 1);
     const bar = document.getElementById('status-bar');
     bar.style.background = `conic-gradient(#ff6b35 0% ${progress * 100}%, #333 ${progress * 100}% 100%)`;
+    bar.style.border = '2px solid #ff6b35';
+    bar.style.borderRadius = '50%';
+    bar.style.width = '80px';
+    bar.style.height = '80px';
+    bar.style.display = 'flex';
+    bar.style.alignItems = 'center';
+    bar.style.justifyContent = 'center';
+    bar.style.fontSize = '14px';
+    bar.style.fontWeight = 'bold';
+    bar.style.color = '#fff';
+    bar.style.cursor = userData.totalCwry >= 1000 ? 'pointer' : 'not-allowed';
+    bar.style.opacity = userData.totalCwry >= 1000 ? '1' : '0.5';
+    bar.textContent = 'Claim';
     const claimBtn = document.getElementById('status-bar');
     if (userData.totalCwry >= 1000) {
         claimBtn.disabled = false;
+        claimBtn.style.background = `conic-gradient(#ff6b35 0% ${progress * 100}%, #333 ${progress * 100}% 100%)`;
     } else {
         claimBtn.disabled = true;
+        claimBtn.style.background = `conic-gradient(#333 0% 100%, #333 0% 100%)`;
     }
 }
 
@@ -260,9 +269,33 @@ function updateTasks() {
     });
 }
 
+async function loadLeaderboard() {
+    try {
+        const response = await fetch(`${API_BASE}/leaderboard`);
+        if (response.ok) {
+            leaderboard = await response.json();
+        }
+    } catch (error) {
+        console.error('Error loading leaderboard:', error);
+    }
+    const lbDiv = document.getElementById('leaderboard');
+    lbDiv.innerHTML = `
+        <h2>Leaderboard</h2>
+        <p>Your Rank: #${getUserRank()}</p>
+        <div id="leaderboard-list">
+            ${leaderboard.slice(0, 100).map((player, index) => `
+                <div class="leaderboard-item">
+                    <span>${index + 1 === 1 ? '🏆' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : '#' + (index + 1)} ${player.username}</span>
+                    <span>${player.totalCwry} CWRY</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
 function getUserRank() {
-    // Mock rank
-    return Math.floor(Math.random() * 1000) + 1;
+    const userIndex = leaderboard.findIndex(player => player.id === userData.id);
+    return userIndex !== -1 ? userIndex + 1 : Math.floor(Math.random() * 1000) + 1;
 }
 
 function calculateReferralEarnings() {
@@ -333,6 +366,18 @@ function copyReferralLink() {
     }).catch(err => {
         console.error('Failed to copy: ', err);
         alert('Failed to copy link. Please copy manually.');
+    });
+}
+
+function copyReferralCode() {
+    const input = document.getElementById('referral-code-input');
+    input.select();
+    input.setSelectionRange(0, 99999); // For mobile devices
+    navigator.clipboard.writeText(input.value).then(() => {
+        alert('Referral code copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+        alert('Failed to copy code. Please copy manually.');
     });
 }
 

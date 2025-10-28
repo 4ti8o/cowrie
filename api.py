@@ -175,11 +175,27 @@ def complete_task(user_id, task_id):
             if task_id == 'tg1' and not check_membership(user_id, 'cowrierush'):
                 logger.warning(
                     f"User {user_id} not member of cowrierush for tg1.")
-                return jsonify({'error': 'Membership verification failed'}), 400
-            if task_id == 'tg2' and not check_membership(user_id, 'cowrierush'):
+                return jsonify({'error': 'Membership verification failed for Channel 1'}), 400
+            # Assuming different channel for tg2
+            if task_id == 'tg2' and not check_membership(user_id, 'cowrierush2'):
                 logger.warning(
-                    f"User {user_id} not member of cowrierush for tg2.")
-                return jsonify({'error': 'Membership verification failed'}), 400
+                    f"User {user_id} not member of cowrierush2 for tg2.")
+                return jsonify({'error': 'Membership verification failed for Channel 2'}), 400
+            # Check referral count for referral tasks
+            if task_id == 'ref5':
+                referral_count = Referral.query.filter_by(
+                    referrer_id=user_id).count()
+                if referral_count < 5:
+                    logger.warning(
+                        f"User {user_id} has only {referral_count} referrals, need 5 for ref5.")
+                    return jsonify({'error': 'Not enough referrals for this task'}), 400
+            if task_id == 'ref20':
+                referral_count = Referral.query.filter_by(
+                    referrer_id=user_id).count()
+                if referral_count < 20:
+                    logger.warning(
+                        f"User {user_id} has only {referral_count} referrals, need 20 for ref20.")
+                    return jsonify({'error': 'Not enough referrals for this task'}), 400
             tasks[task_id] = True
             user.tasks_completed = str(tasks)
             # Add rewards based on task
@@ -200,6 +216,7 @@ def complete_task(user_id, task_id):
         else:
             logger.warning(
                 f"Task {task_id} already completed for user {user_id}.")
+            return jsonify({'error': 'Task already completed'}), 400
     logger.error(f"Task completion failed for user {user_id}, task {task_id}.")
     return jsonify({'error': 'Task completion failed'}), 400
 
