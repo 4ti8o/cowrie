@@ -35,13 +35,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 2000);
 });
 
-function loadUserData() {
-    // Load from localStorage for demo
-    let saved = localStorage.getItem('cowrieRushUser');
-    if (saved) {
-        userData = { ...userData, ...JSON.parse(saved) };
+async function loadUserData() {
+    try {
+        const response = await fetch(`${API_BASE}/user/${userData.id}`);
+        if (response.ok) {
+            const data = await response.json();
+            userData = { ...userData, ...data };
+        } else {
+            // Fallback to localStorage
+            let saved = localStorage.getItem('cowrieRushUser');
+            if (saved) {
+                userData = { ...userData, ...JSON.parse(saved) };
+            }
+        }
+    } catch (error) {
+        console.error('Error loading user data:', error);
+        // Fallback to localStorage
+        let saved = localStorage.getItem('cowrieRushUser');
+        if (saved) {
+            userData = { ...userData, ...JSON.parse(saved) };
+        }
     }
     updateUI();
+    updateStatusBar();
 }
 
 function saveUserData() {
@@ -106,7 +122,7 @@ function loadPage(page) {
                 <div id="leaderboard-list">
                     ${leaderboard.slice(0, 100).map((player, index) => `
                         <div class="leaderboard-item">
-                            <span>${index + 1 === 1 ? '🥇' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : '#' + (index + 1)} ${player.username}</span>
+                            <span>${index + 1 === 1 ? '🏆' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : '#' + (index + 1)} ${player.username}</span>
                             <span>${player.totalCwry} CWRY</span>
                         </div>
                     `).join('')}
@@ -132,14 +148,10 @@ function loadPage(page) {
             `;
             break;
         case 'wallet':
-            const walletDiv = document.getElementById('wallet');
-            walletDiv.innerHTML = `
-                <h2>Wallet</h2>
-                <div class="balance">CWRY Balance: ${userData.totalCwry}</div>
-                <div class="balance">USDT Balance: ${userData.usdtBalance}</div>
-                <div class="balance" id="ton-balance">TON Balance: ${userData.tonBalance || 'Not Connected'}</div>
-                <button class="connect-btn" onclick="connectWallet()">Connect TON Wallet</button>
-            `;
+            // Update existing spans instead of overwriting innerHTML
+            document.getElementById('cwry-balance').textContent = calculateCwryBalance();
+            document.getElementById('usdt-balance').textContent = userData.usdtBalance;
+            document.getElementById('ton-balance').textContent = userData.tonBalance || 'Not Connected';
             break;
     }
 }
@@ -164,27 +176,25 @@ function claimCwry() {
     }
 }
 
-function completeTask(taskId) {
-    if (!userData.tasks[taskId]) {
-        userData.tasks[taskId] = true;
-        let reward = 0;
-        switch (taskId) {
-            case 'tg1':
-            case 'tg2':
-                reward = 100;
-                break;
-            case 'ref5':
-                reward = 50;
-                break;
-            case 'ref20':
-                reward = 100;
-                break;
+async function completeTask(taskId) {
+    try {
+        const response = await fetch(`${API_BASE}/tasks/complete/${userData.id}/${taskId}`, {
+            method: 'POST'
+        });
+        const data = await response.json();
+        if (response.ok) {
+            userData.tasks[taskId] = true;
+            userData.totalCwry = data.reward;
+            saveUserData();
+            updateTasks();
+            updateStatusBar();
+            alert(`Task completed! Earned ${data.reward} CWRY`);
+        } else {
+            alert(data.error || 'Task completion failed');
         }
-        userData.totalCwry += reward;
-        saveUserData();
-        updateTasks();
-        updateStatusBar();
-        alert(`Task completed! Earned ${reward} CWRY`);
+    } catch (error) {
+        console.error('Error completing task:', error);
+        alert('Error completing task');
     }
 }
 
@@ -214,7 +224,10 @@ function updateTasks() {
         const taskEl = document.getElementById(`task${task.slice(-1)}`);
         if (taskEl) {
             taskEl.classList.add('completed');
-            taskEl.querySelector('.claim-btn').style.display = 'none';
+            const btn = taskEl.querySelector('.claim-btn');
+            btn.textContent = '✓ Completed';
+            btn.disabled = true;
+            btn.style.backgroundColor = '#4CAF50'; // Green color for completed
         }
     });
 }
@@ -226,6 +239,25 @@ function getUserRank() {
 
 function calculateReferralEarnings() {
     return userData.referrals.reduce((sum, ref) => sum + (ref.totalCwry * (userData.isPremium ? 0.05 : 0.03)), 0);
+}
+
+function calculateCwryBalance() {
+    // CWRY balance = referral earnings + claimed task earnings
+    const referralEarnings = calculateReferralEarnings();
+    const taskEarnings = Object.keys(userData.tasks).reduce((sum, taskId) => {
+        switch (taskId) {
+            case 'tg1':
+            case 'tg2':
+                return sum + 100;
+            case 'ref5':
+                return sum + 50;
+            case 'ref20':
+                return sum + 100;
+            default:
+                return sum;
+        }
+    }, 0);
+    return referralEarnings + taskEarnings;
 }
 
 function showWallet() {

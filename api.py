@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import os
 import logging
+import requests
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -18,6 +19,27 @@ logger = logging.getLogger(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cowrie_rush.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+# Telegram Bot Token for verification
+TELEGRAM_BOT_TOKEN = os.getenv(
+    'TELEGRAM_BOT_TOKEN', '8182701296:AAES69zVRtksLhQ2b7ci-Om8xIOhBM1e-5A')
+
+
+def check_membership(user_id, channel_username):
+    """Check if user is a member of the Telegram channel."""
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/getChatMember"
+    params = {
+        'chat_id': f'@{channel_username}',
+        'user_id': user_id
+    }
+    try:
+        response = requests.get(url, params=params)
+        data = response.json()
+        if data.get('ok') and data.get('result', {}).get('status') in ['member', 'administrator', 'creator']:
+            return True
+    except Exception as e:
+        logger.error(f"Error checking membership: {e}")
+    return False
 
 # Database Models
 
@@ -149,6 +171,15 @@ def complete_task(user_id, task_id):
     if user:
         tasks = eval(user.tasks_completed)
         if task_id not in tasks:
+            # Verify membership for Telegram tasks
+            if task_id == 'tg1' and not check_membership(user_id, 'cowrierush'):
+                logger.warning(
+                    f"User {user_id} not member of cowrierush for tg1.")
+                return jsonify({'error': 'Membership verification failed'}), 400
+            if task_id == 'tg2' and not check_membership(user_id, 'cowrierush'):
+                logger.warning(
+                    f"User {user_id} not member of cowrierush for tg2.")
+                return jsonify({'error': 'Membership verification failed'}), 400
             tasks[task_id] = True
             user.tasks_completed = str(tasks)
             # Add rewards based on task

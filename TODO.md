@@ -1,17 +1,35 @@
-# TODO: Fix Navigation, Implement Database, Resolve Conflicts
+# TODO List for Cowrie Rush Fixes
 
-## Steps to Complete
+## 1. Fix Claim Button Activation
 
-1. **Implement Pane-Based Navigation**: Add static page divs in index.html, modify loadPage in js/app.js to update specific divs instead of replacing content.
-2. **Integrate API for Database**: Modify js/app.js to use fetch requests to Flask API instead of localStorage.
-3. **Fix Threading in main.py**: Use proper threading to run API and bot in parallel.
-4. **Ensure Claim Buttons Show**: Update loadPage to call updateStatusBar after setting home content.
-5. **Test Functionality**: Run the app and verify navigation, claim buttons, data persistence.
+- [x] Modify js/app.js: Call updateStatusBar() in loadUserData() and after totalCwry changes to enable claim button when >= 100000.
 
-## Progress Tracking
+## 2. Fix Wallet Showing Blank Page
 
-- [x] Step 1: Implement Pane-Based Navigation
-- [x] Step 2: Integrate API for Database
-- [x] Step 3: Fix Threading in main.py
-- [x] Step 4: Ensure Claim Buttons Show
-- [x] Step 5: Test Functionality
+- [x] Modify js/app.js: In loadPage('wallet'), update the existing spans instead of overwriting innerHTML.
+
+## 3. Add Telegram Channel Membership Verification
+
+- [x] Modify api.py: Import requests, add check_membership function using Telegram Bot API.
+- [x] Modify api.py: In complete_task, verify membership for tg1/tg2 before awarding rewards.
+
+## 4. Update CWRY Balance in Wallet
+
+- [x] Modify js/app.js: Calculate CWRY balance as sum of referral earnings + claimed task earnings.
+
+## 5. Use Icons Instead of Emojis
+
+- [x] Modify js/app.js: Replace emojis in leaderboard with icons (e.g., text-based or CSS classes).
+
+## 6. Update Requirements
+
+- [x] Modify requirements.txt: Add 'requests' for API calls.
+
+## 7. Testing and Followup
+
+- [x] Test the app locally to ensure fixes work.
+- [x] Install dependencies if needed.
+
+## 8. UI Improvements
+
+- [ ] Modify js/app.js: After task completion, show a check mark instead of hiding the button, and prevent redoing the task.
