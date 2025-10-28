@@ -1,0 +1,268 @@
+/* Global Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #000;
+    color: #fff;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+    z-index: 9999;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Loading Screen */
+.loading-content {
+    text-align: center;
+}
+
+.spinner {
+    border: 4px solid #333;
+    border-top: 4px solid #ff6b35;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Main App */
+#main-app {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: linear-gradient(45deg, #ff6b35, #f7931e);
+}
+
+#user-info {
+    display: flex;
+    align-items: center;
+}
+
+#user-name {
+    margin-right: 10px;
+}
+
+#user-icon {
+    cursor: pointer;
+}
+
+#wallet-icon {
+    cursor: pointer;
+}
+
+main {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+nav {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    background: linear-gradient(45deg, #333, #555);
+}
+
+nav button {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+nav button.active {
+    background: #ff6b35;
+    border-radius: 5px;
+}
+
+/* Pages */
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+/* Home Page */
+#home {
+    text-align: center;
+}
+
+#total-cwry {
+    font-size: 24px;
+    margin: 20px 0;
+}
+
+#status-bar {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 20px auto;
+    border-radius: 50%;
+    background: conic-gradient(#ff6b35 0% 0%, #333 0% 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#claim-btn {
+    background: #ff6b35;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Earn Page */
+.task {
+    background: #333;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.task.completed {
+    background: #4CAF50;
+}
+
+.claim-btn {
+    background: #ff6b35;
+    border: none;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* Leaderboard */
+#leaderboard {
+    max-height: 400px;
+    overflow-y: auto;
+    background: #333;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.leaderboard-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #555;
+}
+
+.badge {
+    margin-right: 10px;
+}
+
+.gold { color: gold; }
+.silver { color: silver; }
+.bronze { color: #cd7f32; }
+
+/* Frens */
+#frens-info {
+    background: #333;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.referral {
+    background: #333;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Wallet */
+#wallet {
+    text-align: center;
+}
+
+.balance {
+    background: #333;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.connect-btn {
+    background: #ff6b35;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* User Stats Modal */
+#user-stats {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    display: none;
+}
+
+.stats-content {
+    background: #333;
+    padding: 20px;
+    border-radius: 5px;
+    max-width: 300px;
+    width: 90%;
+}
+
+.close-btn {
+    float: right;
+    cursor: pointer;
+}
