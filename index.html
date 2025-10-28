@@ -19,7 +19,7 @@
         <header id="header">
             <div id="user-info">
                 <span id="user-name"></span>
-                <span id="user-icon" onclick="showUserStats()">👤</span>
+                <img id="user-avatar" onclick="showUserStats()" src="" alt="User Avatar" style="width: 40px; height: 40px; border-radius: 50%; cursor: pointer;">
             </div>
             <div id="wallet-icon" onclick="showWallet()">💰</div>
         </header>
@@ -50,19 +50,19 @@
         </main>
         <nav id="nav">
             <button onclick="navigate('home')">
-                <div>🏠</div>
+                <div><img src="https://img.icons8.com/color/24/000000/home.png" alt="Home"></div>
                 <div>Home</div>
             </button>
             <button onclick="navigate('earn')">
-                <div>💰</div>
+                <div><img src="https://img.icons8.com/color/24/000000/money.png" alt="Earn"></div>
                 <div>Earn</div>
             </button>
             <button onclick="navigate('leaderboard')">
-                <div>🏆</div>
+                <div><img src="https://img.icons8.com/color/24/000000/trophy.png" alt="Leaderboard"></div>
                 <div>Leaderboard</div>
             </button>
             <button onclick="navigate('frens')">
-                <div>👥</div>
+                <div><img src="https://img.icons8.com/color/24/000000/conference.png" alt="Frens"></div>
                 <div>Frens</div>
             </button>
         </nav>

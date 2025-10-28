@@ -66,6 +66,12 @@ function saveUserData() {
 
 function updateUI() {
     document.getElementById('user-name').textContent = userData.name;
+    const avatarImg = document.getElementById('user-avatar');
+    if (user.photo_url) {
+        avatarImg.src = user.photo_url;
+    } else {
+        avatarImg.src = 'https://img.icons8.com/color/40/000000/user.png'; // Default icon if no photo
+    }
     // Update other elements as needed
 }
 
@@ -85,17 +91,6 @@ function loadPage(page) {
             const homeDiv = document.getElementById('home');
             homeDiv.innerHTML = `
                 <h2>Home</h2>
-                <div class="welcome-message">
-                    <p>👋 Welcome, @${userData.username}!</p>
-                    <p>👥 Build your squad, complete missions, and boost your earnings! For every friend you invite, you both earn 50 $CWRY tokens.</p>
-                    <p>🌟 $COWRY is more than a token—it's a movement. Designed to reward the culture, connect communities, and fuel the future of decentralized wealth.</p>
-                    <p>This is your first step into the world of ChainRaiders.</p>
-                    <p>Let's raid the blockchain—together. ⚔️💰</p>
-                </div>
-                <div class="home-buttons">
-                    <button class="home-btn" onclick="startGame()">Start ⚔️</button>
-                    <button class="home-btn" onclick="joinChannel()">Join Channel</button>
-                </div>
                 <div class="balance-display">
                     <p>Total CWRY: <span id="total-cwry">${userData.totalCwry}</span></p>
                 </div>
@@ -107,29 +102,29 @@ function loadPage(page) {
             const earnDiv = document.getElementById('earn');
             earnDiv.innerHTML = `
                 <h2>Earn</h2>
-                <div class="task" id="task1">
+                <div class="task clickable" id="task1" onclick="startTask('tg1')">
                     <div>Join Telegram Channel 1</div>
-                    <button class="claim-btn" onclick="completeTask('tg1')">Claim 100 CWRY</button>
+                    <button class="claim-btn" id="btn-tg1" style="display:none;" onclick="completeTask('tg1')">Claim 100 CWRY</button>
                 </div>
-                <div class="task" id="task2">
+                <div class="task clickable" id="task2" onclick="startTask('tg2')">
                     <div>Join Telegram Channel 2</div>
-                    <button class="claim-btn" onclick="completeTask('tg2')">Claim 100 CWRY</button>
+                    <button class="claim-btn" id="btn-tg2" style="display:none;" onclick="completeTask('tg2')">Claim 100 CWRY</button>
                 </div>
-                <div class="task" id="task3">
+                <div class="task clickable" id="task3" onclick="startTask('ref5')">
                     <div>Refer 5 Frens</div>
-                    <button class="claim-btn" onclick="completeTask('ref5')">Claim 50 CWRY</button>
+                    <button class="claim-btn" id="btn-ref5" style="display:none;" onclick="completeTask('ref5')">Claim 50 CWRY</button>
                 </div>
-                <div class="task" id="task4">
+                <div class="task clickable" id="task4" onclick="startTask('ref20')">
                     <div>Refer 20 Frens</div>
-                    <button class="claim-btn" onclick="completeTask('ref20')">Claim 50 CWRY</button>
+                    <button class="claim-btn" id="btn-ref20" style="display:none;" onclick="completeTask('ref20')">Claim 50 CWRY</button>
                 </div>
-                <div class="task" id="task5">
+                <div class="task clickable" id="task5" onclick="startTask('x')">
                     <div>Follow on X</div>
-                    <button class="claim-btn" onclick="startTimer('x', 10)">Start</button>
+                    <button class="claim-btn" id="btn-x" style="display:none;" onclick="completeTask('x')">Claim</button>
                 </div>
-                <div class="task" id="task6">
+                <div class="task clickable" id="task6" onclick="startTask('yt')">
                     <div>Subscribe to YouTube</div>
-                    <button class="claim-btn" onclick="redirectYouTube()">Go to YouTube</button>
+                    <button class="claim-btn" id="btn-yt" style="display:none;" onclick="completeTask('yt')">Claim</button>
                 </div>
             `;
             updateTasks();
@@ -201,6 +196,19 @@ function updateStatusBar() {
         claimBtn.disabled = true;
         claimBtn.style.background = `conic-gradient(#333 0% 100%, #333 0% 100%)`;
     }
+    // Add progress stroke animation
+    bar.style.position = 'relative';
+    bar.style.overflow = 'hidden';
+    const stroke = document.createElement('div');
+    stroke.style.position = 'absolute';
+    stroke.style.top = '0';
+    stroke.style.left = '0';
+    stroke.style.width = '100%';
+    stroke.style.height = '100%';
+    stroke.style.borderRadius = '50%';
+    stroke.style.border = '2px solid #ff6b35';
+    stroke.style.clipPath = `conic-gradient(#ff6b35 0% ${progress * 100}%, transparent ${progress * 100}% 100%)`;
+    bar.appendChild(stroke);
 }
 
 function claimCwry() {
@@ -235,8 +243,28 @@ async function completeTask(taskId) {
     }
 }
 
+function startTask(taskId) {
+    if (userData.tasks[taskId]) {
+        return; // Already completed
+    }
+    if (taskId === 'tg1' || taskId === 'tg2') {
+        window.open('https://t.me/cowrierush', '_blank');
+        document.getElementById(`btn-${taskId}`).style.display = 'block';
+    } else if (taskId === 'ref5' || taskId === 'ref20') {
+        // For referral tasks, show button immediately since validation is on backend
+        document.getElementById(`btn-${taskId}`).style.display = 'block';
+    } else if (taskId === 'x') {
+        window.open('https://x.com/cowrierush', '_blank');
+        startTimer(taskId, 10);
+    } else if (taskId === 'yt') {
+        window.open('https://youtube.com/channel', '_blank');
+        startTimer(taskId, 30);
+    }
+}
+
 function startTimer(taskId, seconds) {
-    const btn = document.querySelector(`#task${taskId === 'x' ? 5 : 6} .claim-btn`);
+    const btn = document.getElementById(`btn-${taskId}`);
+    btn.style.display = 'block';
     btn.disabled = true;
     btn.textContent = `Wait ${seconds}s`;
     let timeLeft = seconds;
@@ -246,7 +274,7 @@ function startTimer(taskId, seconds) {
         if (timeLeft <= 0) {
             clearInterval(timer);
             btn.textContent = 'Claim';
-            btn.onclick = () => completeTask(taskId);
+            btn.disabled = false;
         }
     }, 1000);
 }
@@ -285,7 +313,7 @@ async function loadLeaderboard() {
         <div id="leaderboard-list">
             ${leaderboard.slice(0, 100).map((player, index) => `
                 <div class="leaderboard-item">
-                    <span>${index + 1 === 1 ? '🏆' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : '#' + (index + 1)} ${player.username}</span>
+                    <span>${index + 1 === 1 ? '<img src="https://img.icons8.com/color/20/000000/trophy.png" alt="trophy">' : index + 1 === 2 ? '<img src="https://img.icons8.com/color/20/000000/medal-second-place.png" alt="silver">' : index + 1 === 3 ? '<img src="https://img.icons8.com/color/20/000000/medal.png" alt="bronze">' : '#' + (index + 1)} ${player.username}</span>
                     <span>${player.totalCwry} CWRY</span>
                 </div>
             `).join('')}
