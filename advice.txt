@@ -1,0 +1,60 @@
+# Cowrie Rush Telegram Mini App - TODO and Advice
+
+## TODO List for Development and Testing
+
+### Database Setup
+- [ ] Set up a SQL database (e.g., PostgreSQL or SQLite for testing) to store user data, balances, referrals, tasks completed, leaderboard rankings.
+- [ ] Create tables: users (id, telegram_id, username, name, total_cwry, usdt_balance, ton_balance, referral_code, referrer_id, is_premium), referrals (id, referrer_id, referred_id, reward_percentage), tasks (id, user_id, task_type, completed_at, reward_claimed), leaderboard (computed view or table for top balances).
+- [ ] Implement API endpoints for CRUD operations on users, referrals, tasks, balances.
+
+### Backend Development
+- [ ] Develop a backend server (e.g., Node.js with Express, or Python Flask) to handle user authentication via Telegram, referral logic, task verification, balance updates.
+- [ ] Integrate Telegram Bot API for channel membership verification (use bot to check if user is in channel).
+- [ ] For wallet connection: Use Telegram Wallet API or TON SDK to connect and fetch TON balance.
+- [ ] Implement referral system: Generate unique referral links, track invites, calculate rewards (3% or 5% based on premium status).
+- [ ] Add security: Validate Telegram Web App init data, prevent cheating on tasks.
+- [ ] Set up Telegram bot with /start command to open the web app (see bot.py for example).
+
+### Frontend Enhancements
+- [ ] Add real-time updates for balances and leaderboard using WebSockets or polling.
+- [ ] Implement proper error handling and loading states.
+- [ ] Add animations for status bar, claim buttons, etc.
+- [ ] Ensure responsiveness for mobile (Telegram mini apps are mobile-first).
+- [ ] Add sound effects or haptic feedback for interactions.
+
+### Testing
+- [ ] Unit tests for task completion logic, balance calculations.
+- [ ] Integration tests for referral system and API calls.
+- [ ] User testing: Simulate multiple users, referrals, task completions.
+- [ ] Test on Telegram Web App environment.
+
+### Deployment
+- [ ] Host frontend on a free static site host: GitHub Pages (free for public repos), Netlify (free tier), Vercel (free tier), Render (free tier for static sites).
+- [ ] Host backend on a server: PythonAnywhere (free tier for Python apps), Heroku (free tier available but limited), Railway (free tier), or use serverless like Vercel Functions.
+- [ ] For Telegram Mini App: Ensure the hosted URL is HTTPS and set it in BotFather for your bot.
+- [ ] Add monitoring and logging.
+- [ ] Ensure HTTPS for security.
+
+### Local Testing Instructions for Telegram Mini App
+- [ ] Start a local server: Run `python -m http.server 8000` in the project directory.
+- [ ] Access the app at http://localhost:8000.
+- [ ] To test in Telegram Mini App environment:
+  - Create a Telegram bot and set up the Web App in BotFather.
+  - Use the Web App URL in your bot's menu or inline keyboard.
+  - For local testing, use ngrok or similar to expose localhost to the internet, then set that URL in BotFather.
+  - Alternatively, use Telegram Web App simulator extensions in browser.
+  - Test navigation, task completion, referral mock, leaderboard display.
+  - Verify responsive design on mobile viewports.
+  - Check wallet connection mock and user stats modal.
+- [ ] To test the bot locally: Install dependencies with `pip install -r requirements.txt`, set your bot token in bot.py, and run `python bot.py`.
+
+### Additional Advice
+- Use environment variables for sensitive data like bot tokens.
+- For production, use a proper database; avoid localStorage for real data.
+- Consider using a framework like React for better state management.
+- Audit for performance: Optimize images, lazy load components.
+- Legal: Ensure compliance with Telegram's terms, handle user data privacy.
+- Monetization: Plan for ads or in-app purchases if needed.
+- Version control: Use Git, commit regularly.
+
+This list can be updated as development progresses. Mark items as done when completed.

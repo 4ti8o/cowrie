@@ -13,7 +13,10 @@ let userData = {
     isPremium: user?.is_premium || false
 };
 
-// Mock data for demo
+// API base URL
+const API_BASE = 'http://localhost:5000/api';
+
+// Mock data for demo (fallback if API fails)
 let leaderboard = [
     { username: 'TopPlayer1', totalCwry: 150000 },
     { username: 'TopPlayer2', totalCwry: 140000 },
@@ -59,85 +62,83 @@ function navigate(page) {
 }
 
 function loadPage(page) {
-    const content = document.getElementById('content');
     switch (page) {
         case 'home':
-            content.innerHTML = `
-                <div id="home" class="page active">
-                    <h2>Home</h2>
-                    <p>Total CWRY: <span id="total-cwry">${userData.totalCwry}</span></p>
-                    <div id="status-bar">
-                        <button id="claim-btn" onclick="claimCwry()" disabled>Claim</button>
-                    </div>
-                </div>
-            `;
+            document.getElementById('total-cwry').textContent = userData.totalCwry;
             updateStatusBar();
             break;
         case 'earn':
-            content.innerHTML = `
-                <div id="earn" class="page active">
-                    <h2>Earn</h2>
-                    <div class="task" id="task1">
-                        <div>Join Telegram Channel 1</div>
-                        <button class="claim-btn" onclick="completeTask('tg1')">Claim 100 CWRY</button>
-                    </div>
-                    <div class="task" id="task2">
-                        <div>Join Telegram Channel 2</div>
-                        <button class="claim-btn" onclick="completeTask('tg2')">Claim 100 CWRY</button>
-                    </div>
-                    <div class="task" id="task3">
-                        <div>Refer 5 Frens</div>
-                        <button class="claim-btn" onclick="completeTask('ref5')">Claim 50 CWRY</button>
-                    </div>
-                    <div class="task" id="task4">
-                        <div>Refer 20 Frens</div>
-                        <button class="claim-btn" onclick="completeTask('ref20')">Claim 100 CWRY</button>
-                    </div>
-                    <div class="task" id="task5">
-                        <div>Follow on X</div>
-                        <button class="claim-btn" onclick="startTimer('x', 10)">Start</button>
-                    </div>
-                    <div class="task" id="task6">
-                        <div>Subscribe to YouTube</div>
-                        <button class="claim-btn" onclick="redirectYouTube()">Go to YouTube</button>
-                    </div>
+            const earnDiv = document.getElementById('earn');
+            earnDiv.innerHTML = `
+                <h2>Earn</h2>
+                <div class="task" id="task1">
+                    <div>Join Telegram Channel 1</div>
+                    <button class="claim-btn" onclick="completeTask('tg1')">Claim 100 CWRY</button>
+                </div>
+                <div class="task" id="task2">
+                    <div>Join Telegram Channel 2</div>
+                    <button class="claim-btn" onclick="completeTask('tg2')">Claim 100 CWRY</button>
+                </div>
+                <div class="task" id="task3">
+                    <div>Refer 5 Frens</div>
+                    <button class="claim-btn" onclick="completeTask('ref5')">Claim 50 CWRY</button>
+                </div>
+                <div class="task" id="task4">
+                    <div>Refer 20 Frens</div>
+                    <button class="claim-btn" onclick="completeTask('ref20')">Claim 100 CWRY</button>
+                </div>
+                <div class="task" id="task5">
+                    <div>Follow on X</div>
+                    <button class="claim-btn" onclick="startTimer('x', 10)">Start</button>
+                </div>
+                <div class="task" id="task6">
+                    <div>Subscribe to YouTube</div>
+                    <button class="claim-btn" onclick="redirectYouTube()">Go to YouTube</button>
                 </div>
             `;
             updateTasks();
             break;
         case 'leaderboard':
-            content.innerHTML = `
-                <div id="leaderboard" class="page active">
-                    <h2>Leaderboard</h2>
-                    <p>Your Rank: #${getUserRank()}</p>
-                    <div id="leaderboard-list">
-                        ${leaderboard.slice(0, 100).map((player, index) => `
-                            <div class="leaderboard-item">
-                                <span>${index + 1 === 1 ? '🥇' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : '#' + (index + 1)} ${player.username}</span>
-                                <span>${player.totalCwry} CWRY</span>
-                            </div>
-                        `).join('')}
-                    </div>
+            const lbDiv = document.getElementById('leaderboard');
+            lbDiv.innerHTML = `
+                <h2>Leaderboard</h2>
+                <p>Your Rank: #${getUserRank()}</p>
+                <div id="leaderboard-list">
+                    ${leaderboard.slice(0, 100).map((player, index) => `
+                        <div class="leaderboard-item">
+                            <span>${index + 1 === 1 ? '🥇' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : '#' + (index + 1)} ${player.username}</span>
+                            <span>${player.totalCwry} CWRY</span>
+                        </div>
+                    `).join('')}
                 </div>
             `;
             break;
         case 'frens':
-            content.innerHTML = `
-                <div id="frens" class="page active">
-                    <h2>Frens</h2>
-                    <div id="frens-info">
-                        <p>You get ${userData.isPremium ? '5%' : '3%'} of all referrals' total balance.</p>
-                        <p>Total Earnings from Referrals: ${calculateReferralEarnings()} CWRY</p>
-                    </div>
-                    <div id="referrals-list">
-                        ${userData.referrals.map(ref => `
-                            <div class="referral">
-                                <span>${ref.name}</span>
-                                <span>${ref.totalCwry} CWRY</span>
-                            </div>
-                        `).join('')}
-                    </div>
+            const frensDiv = document.getElementById('frens');
+            frensDiv.innerHTML = `
+                <h2>Frens</h2>
+                <div id="frens-info">
+                    <p>You get ${userData.isPremium ? '5%' : '3%'} of all referrals' total balance.</p>
+                    <p>Total Earnings from Referrals: ${calculateReferralEarnings()} CWRY</p>
                 </div>
+                <div id="referrals-list">
+                    ${userData.referrals.map(ref => `
+                        <div class="referral">
+                            <span>${ref.name}</span>
+                            <span>${ref.totalCwry} CWRY</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            break;
+        case 'wallet':
+            const walletDiv = document.getElementById('wallet');
+            walletDiv.innerHTML = `
+                <h2>Wallet</h2>
+                <div class="balance">CWRY Balance: ${userData.totalCwry}</div>
+                <div class="balance">USDT Balance: ${userData.usdtBalance}</div>
+                <div class="balance" id="ton-balance">TON Balance: ${userData.tonBalance || 'Not Connected'}</div>
+                <button class="connect-btn" onclick="connectWallet()">Connect TON Wallet</button>
             `;
             break;
     }
@@ -228,16 +229,7 @@ function calculateReferralEarnings() {
 }
 
 function showWallet() {
-    const content = document.getElementById('content');
-    content.innerHTML = `
-        <div id="wallet" class="page active">
-            <h2>Wallet</h2>
-            <div class="balance">CWRY Balance: ${userData.totalCwry}</div>
-            <div class="balance">USDT Balance: ${userData.usdtBalance}</div>
-            <div class="balance" id="ton-balance">TON Balance: ${userData.tonBalance || 'Not Connected'}</div>
-            <button class="connect-btn" onclick="connectWallet()">Connect TON Wallet</button>
-        </div>
-    `;
+    navigate('wallet');
 }
 
 function connectWallet() {

@@ -24,7 +24,29 @@
             <div id="wallet-icon" onclick="showWallet()">💰</div>
         </header>
         <main id="content">
-            <!-- Pages will be loaded here -->
+            <div id="home" class="page active">
+                <h2>Home</h2>
+                <p>Total CWRY: <span id="total-cwry">0</span></p>
+                <div id="status-bar">
+                    <button id="claim-btn" onclick="claimCwry()" disabled>Claim</button>
+                </div>
+            </div>
+            <div id="earn" class="page">
+                <h2>Earn</h2>
+                <!-- Tasks will be loaded here -->
+            </div>
+            <div id="leaderboard" class="page">
+                <h2>Leaderboard</h2>
+                <!-- Leaderboard will be loaded here -->
+            </div>
+            <div id="frens" class="page">
+                <h2>Frens</h2>
+                <!-- Frens will be loaded here -->
+            </div>
+            <div id="wallet" class="page">
+                <h2>Wallet</h2>
+                <!-- Wallet will be loaded here -->
+            </div>
         </main>
         <nav id="nav">
             <button onclick="navigate('home')">
