@@ -18,9 +18,9 @@ const API_BASE = 'http://localhost:5000/api';
 
 // Mock data for demo (fallback if API fails)
 let leaderboard = [
-    { username: 'TopPlayer1', totalCwry: 150000 },
-    { username: 'TopPlayer2', totalCwry: 140000 },
-    { username: 'TopPlayer3', totalCwry: 130000 },
+    { id: 1, username: 'TopPlayer1', totalCwry: 150000 },
+    { id: 2, username: 'TopPlayer2', totalCwry: 140000 },
+    { id: 3, username: 'TopPlayer3', totalCwry: 130000 },
     // Add more for demo
 ];
 
@@ -135,18 +135,14 @@ function loadPage(page) {
         case 'frens':
             const frensDiv = document.getElementById('frens');
             const referralLink = `https://t.me/cowrierushbot?start=${userData.id}`;
-            const referralCode = `CWRY${userData.id}`;
             frensDiv.innerHTML = `
                 <h2>Frens</h2>
-                <div id="referral-link">
-                    <p>Your Referral Link:</p>
-                    <input type="text" id="referral-input" value="${referralLink}" readonly>
-                    <button onclick="copyReferralLink()">Copy Link</button>
-                </div>
-                <div id="referral-code">
-                    <p>Your Referral Code:</p>
-                    <input type="text" id="referral-code-input" value="${referralCode}" readonly>
-                    <button onclick="copyReferralCode()">Copy Code</button>
+                <div id="referral-link" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;">
+                    <input type="text" id="referral-input" value="${referralLink}" readonly style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px;">
+                    <button onclick="copyReferralLink()" style="padding: 10px 15px; background-color: #ff6b35; color: white; border: none; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                        <img src="https://img.icons8.com/material-outlined/24/ffffff/copy.png" alt="copy" style="width: 16px; height: 16px;">
+                        Copy
+                    </button>
                 </div>
                 <div id="frens-info">
                     <p>You get ${userData.isPremium ? '5%' : '3%'} of all referrals' total balance.</p>
@@ -247,7 +243,11 @@ function startTask(taskId) {
     if (userData.tasks[taskId]) {
         return; // Already completed
     }
-    if (taskId === 'tg1' || taskId === 'tg2') {
+    if (taskId === 'tg1') {
+        window.open('https://t.me/+_aqG4ylI9mYxZmVk', '_blank');
+        // For tg1, show button immediately as per feedback
+        document.getElementById(`btn-${taskId}`).style.display = 'block';
+    } else if (taskId === 'tg2') {
         window.open('https://t.me/cowrierush', '_blank');
         document.getElementById(`btn-${taskId}`).style.display = 'block';
     } else if (taskId === 'ref5' || taskId === 'ref20') {
@@ -322,8 +322,10 @@ async function loadLeaderboard() {
 }
 
 function getUserRank() {
-    const userIndex = leaderboard.findIndex(player => player.id === userData.id);
-    return userIndex !== -1 ? userIndex + 1 : Math.floor(Math.random() * 1000) + 1;
+    // Sort leaderboard by totalCwry descending
+    const sortedLeaderboard = [...leaderboard].sort((a, b) => b.totalCwry - a.totalCwry);
+    const userIndex = sortedLeaderboard.findIndex(player => player.id === userData.id);
+    return userIndex !== -1 ? userIndex + 1 : Math.floor(Math.random() * 1000) + 1000;
 }
 
 function calculateReferralEarnings() {
@@ -397,17 +399,6 @@ function copyReferralLink() {
     });
 }
 
-function copyReferralCode() {
-    const input = document.getElementById('referral-code-input');
-    input.select();
-    input.setSelectionRange(0, 99999); // For mobile devices
-    navigator.clipboard.writeText(input.value).then(() => {
-        alert('Referral code copied to clipboard!');
-    }).catch(err => {
-        console.error('Failed to copy: ', err);
-        alert('Failed to copy code. Please copy manually.');
-    });
-}
 
 function startGame() {
     // Navigate to earn page or start game logic
