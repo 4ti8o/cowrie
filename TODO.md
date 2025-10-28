@@ -32,4 +32,14 @@
 
 ## 8. UI Improvements
 
-- [ ] Modify js/app.js: After task completion, show a check mark instead of hiding the button, and prevent redoing the task.
+- [x] Modify js/app.js: After task completion, show a check mark instead of hiding the button, and prevent redoing the task.
+
+## 9. Referral Link
+
+- [x] Add copy-able referral link to the frens page for sharing referrals.
+
+## 10. Welcome Message and Buttons
+
+- [x] Add welcome message to home page with start and join channel buttons.
+- [x] Update referral rewards to 500 CWRY.
+- [x] Implement daily tap mechanism for CWRY button.

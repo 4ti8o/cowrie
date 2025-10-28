@@ -82,6 +82,28 @@ function loadPage(page) {
         case 'home':
             document.getElementById('total-cwry').textContent = userData.totalCwry;
             updateStatusBar();
+            const homeDiv = document.getElementById('home');
+            homeDiv.innerHTML = `
+                <h2>Home</h2>
+                <div class="welcome-message">
+                    <p>👋 Welcome, @${userData.username}!</p>
+                    <p>⏰ Tap the $CWRY button every 24 hours to grow your coin balance. It's simple, consistent, and rewarding.</p>
+                    <p>👥 Build your squad, complete missions, and boost your earnings! For every friend you invite, you both earn 500 $CWRY tokens.</p>
+                    <p>🌟 $COWRY is more than a token—it's a movement. Designed to reward the culture, connect communities, and fuel the future of decentralized wealth.</p>
+                    <p>This is your first step into the world of ChainRaiders.</p>
+                    <p>Let's raid the blockchain—together. ⚔️💰</p>
+                </div>
+                <div class="home-buttons">
+                    <button class="home-btn" onclick="startGame()">Start ⚔️</button>
+                    <button class="home-btn" onclick="joinChannel()">Join Channel</button>
+                </div>
+                <div class="balance-display">
+                    <p>Total CWRY: <span id="total-cwry">${userData.totalCwry}</span></p>
+                    <button id="claim-btn" onclick="dailyTap()" disabled>Tap for CWRY</button>
+                </div>
+                <div id="status-bar"></div>
+            `;
+            updateStatusBar();
             break;
         case 'earn':
             const earnDiv = document.getElementById('earn');
@@ -131,8 +153,14 @@ function loadPage(page) {
             break;
         case 'frens':
             const frensDiv = document.getElementById('frens');
+            const referralLink = `https://t.me/cowrierushbot?start=${userData.id}`;
             frensDiv.innerHTML = `
                 <h2>Frens</h2>
+                <div id="referral-link">
+                    <p>Your Referral Link:</p>
+                    <input type="text" id="referral-input" value="${referralLink}" readonly>
+                    <button onclick="copyReferralLink()">Copy Link</button>
+                </div>
                 <div id="frens-info">
                     <p>You get ${userData.isPremium ? '5%' : '3%'} of all referrals' total balance.</p>
                     <p>Total Earnings from Referrals: ${calculateReferralEarnings()} CWRY</p>
@@ -294,4 +322,44 @@ function showUserStats() {
 
 function closeModal() {
     document.getElementById('user-stats').remove();
+}
+
+function copyReferralLink() {
+    const input = document.getElementById('referral-input');
+    input.select();
+    input.setSelectionRange(0, 99999); // For mobile devices
+    navigator.clipboard.writeText(input.value).then(() => {
+        alert('Referral link copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+        alert('Failed to copy link. Please copy manually.');
+    });
+}
+
+function startGame() {
+    // Navigate to earn page or start game logic
+    navigate('earn');
+}
+
+function joinChannel() {
+    window.open('https://t.me/cowrierush', '_blank');
+}
+
+function dailyTap() {
+    const lastTap = localStorage.getItem('lastTap');
+    const now = Date.now();
+    const twentyFourHours = 24 * 60 * 60 * 1000;
+
+    if (!lastTap || (now - lastTap) >= twentyFourHours) {
+        userData.totalCwry += 100; // Daily reward
+        localStorage.setItem('lastTap', now);
+        saveUserData();
+        document.getElementById('total-cwry').textContent = userData.totalCwry;
+        updateStatusBar();
+        alert('Daily tap claimed! +100 CWRY');
+    } else {
+        const timeLeft = twentyFourHours - (now - lastTap);
+        const hoursLeft = Math.ceil(timeLeft / (60 * 60 * 1000));
+        alert(`Daily tap available in ${hoursLeft} hours!`);
+    }
 }

@@ -188,13 +188,13 @@ def complete_task(user_id, task_id):
                 logger.info(
                     f"Task {task_id} completed for user {user_id}, reward: 100 cwry.")
             elif task_id == 'ref5':
-                user.total_cwry += 50
+                user.total_cwry += 500
                 logger.info(
-                    f"Task {task_id} completed for user {user_id}, reward: 50 cwry.")
+                    f"Task {task_id} completed for user {user_id}, reward: 500 cwry.")
             elif task_id == 'ref20':
-                user.total_cwry += 100
+                user.total_cwry += 500
                 logger.info(
-                    f"Task {task_id} completed for user {user_id}, reward: 100 cwry.")
+                    f"Task {task_id} completed for user {user_id}, reward: 500 cwry.")
             db.session.commit()
             return jsonify({'message': 'Task completed', 'reward': user.total_cwry})
         else:
