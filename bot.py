@@ -30,7 +30,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_html(
-        rf"Hi {user.mention_html()}! Welcome to Cowrie Rush! 🐚💰",
+        rf"🚀 Hey {user.mention_html()}! Ready to dive into the ultimate crypto adventure? Welcome to Cowrie Rush! 🐚💰 Unleash your inner tycoon and start collecting CWRY tokens now!",
         reply_markup=reply_markup
     )
 
