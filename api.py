@@ -177,9 +177,9 @@ def complete_task(user_id, task_id):
                     f"User {user_id} not member of cowrierush for tg1.")
                 return jsonify({'error': 'Membership verification failed for Channel 1'}), 400
             # Assuming different channel for tg2
-            if task_id == 'tg2' and not check_membership(user_id, 'cowrierush2'):
+            if task_id == 'tg2' and not check_membership(user_id, 'cowrierush'):
                 logger.warning(
-                    f"User {user_id} not member of cowrierush2 for tg2.")
+                    f"User {user_id} not member of cowrierush for tg2.")
                 return jsonify({'error': 'Membership verification failed for Channel 2'}), 400
             # Check referral count for referral tasks
             if task_id == 'ref5':
