@@ -134,7 +134,7 @@ function loadPage(page) {
             break;
         case 'frens':
             const frensDiv = document.getElementById('frens');
-            const referralLink = `https://t.me/cowrierushbot?start=${userData.id}`;
+            const referralLink = `https://t.me/cowriegamebot?start=${userData.id}`;
             frensDiv.innerHTML = `
                 <h2>Frens</h2>
                 <div id="referral-link" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;">
