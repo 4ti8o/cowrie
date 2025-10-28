@@ -87,8 +87,7 @@ function loadPage(page) {
                 <h2>Home</h2>
                 <div class="welcome-message">
                     <p>👋 Welcome, @${userData.username}!</p>
-                    <p>⏰ Tap the $CWRY button every 24 hours to grow your coin balance. It's simple, consistent, and rewarding.</p>
-                    <p>👥 Build your squad, complete missions, and boost your earnings! For every friend you invite, you both earn 500 $CWRY tokens.</p>
+                    <p>👥 Build your squad, complete missions, and boost your earnings! For every friend you invite, you both earn 50 $CWRY tokens.</p>
                     <p>🌟 $COWRY is more than a token—it's a movement. Designed to reward the culture, connect communities, and fuel the future of decentralized wealth.</p>
                     <p>This is your first step into the world of ChainRaiders.</p>
                     <p>Let's raid the blockchain—together. ⚔️💰</p>
@@ -99,9 +98,8 @@ function loadPage(page) {
                 </div>
                 <div class="balance-display">
                     <p>Total CWRY: <span id="total-cwry">${userData.totalCwry}</span></p>
-                    <button id="claim-btn" onclick="dailyTap()" disabled>Tap for CWRY</button>
                 </div>
-                <div id="status-bar"></div>
+                <button id="status-bar" onclick="claimCwry()" disabled>Claim</button>
             `;
             updateStatusBar();
             break;
@@ -123,7 +121,7 @@ function loadPage(page) {
                 </div>
                 <div class="task" id="task4">
                     <div>Refer 20 Frens</div>
-                    <button class="claim-btn" onclick="completeTask('ref20')">Claim 100 CWRY</button>
+                    <button class="claim-btn" onclick="completeTask('ref20')">Claim 50 CWRY</button>
                 </div>
                 <div class="task" id="task5">
                     <div>Follow on X</div>
@@ -185,18 +183,20 @@ function loadPage(page) {
 }
 
 function updateStatusBar() {
-    const progress = Math.min(userData.totalCwry / 100000, 1);
+    const progress = Math.min(userData.totalCwry / 1000, 1);
     const bar = document.getElementById('status-bar');
     bar.style.background = `conic-gradient(#ff6b35 0% ${progress * 100}%, #333 ${progress * 100}% 100%)`;
-    const claimBtn = document.getElementById('claim-btn');
-    if (userData.totalCwry >= 100000) {
+    const claimBtn = document.getElementById('status-bar');
+    if (userData.totalCwry >= 1000) {
         claimBtn.disabled = false;
+    } else {
+        claimBtn.disabled = true;
     }
 }
 
 function claimCwry() {
-    if (userData.totalCwry >= 100000) {
-        userData.totalCwry -= 100000;
+    if (userData.totalCwry >= 1000) {
+        userData.totalCwry -= 1000;
         // Add to some balance or reward
         saveUserData();
         updateStatusBar();
@@ -280,7 +280,7 @@ function calculateCwryBalance() {
             case 'ref5':
                 return sum + 50;
             case 'ref20':
-                return sum + 100;
+                return sum + 50;
             default:
                 return sum;
         }
